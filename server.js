@@ -1,4 +1,5 @@
 // server.js
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -9,37 +10,41 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ---------------------------
-// 🔥 MongoDB Connection
-// ---------------------------
-// Replace with your actual MongoDB username, password, and DB name
-// ⚠️ Encode special characters in password, e.g., @ → %40
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("✅ MongoDB Connected"))
-.catch(err => console.log("❌ DB Error:", err.message));
+// ✅ MongoDB connection from environment variable
+const mongoURI = process.env.MONGO_URI;
 
-// ---------------------------
-// Schema for Contact Messages
-// ---------------------------
-const MessageSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  message: { type: String, required: true }
-}, { timestamps: true });
+if (!mongoURI) {
+  console.error("❌ MONGO_URI not set in environment variables!");
+  process.exit(1);
+}
 
-const Message = mongoose.model("Message", MessageSchema);
+mongoose
+  .connect(mongoURI)
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => {
+    console.error("❌ DB Error:", err.message);
+    process.exit(1);
+  });
 
-// ---------------------------
-// Routes
-// ---------------------------
+// Message schema
+const messageSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    message: { type: String, required: true },
+  },
+  { timestamps: true }
+);
+
+const Message = mongoose.model("Message", messageSchema);
 
 // Test route
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.send("🚀 Server is running");
 });
 
-// Contact form API
-app.post('/contact', async (req, res) => {
+// Contact form route
+app.post("/contact", async (req, res) => {
   try {
     const { name, email, message } = req.body;
 
@@ -50,16 +55,14 @@ app.post('/contact', async (req, res) => {
     const newMessage = new Message({ name, email, message });
     await newMessage.save();
 
-    res.json({ msg: "✅ Message saved successfully" });
+    res.status(200).json({ msg: "✅ Message saved successfully" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "❌ Error saving message" });
+    console.error("❌ Error saving message:", err.message);
+    res.status(500).json({ msg: "Server error" });
   }
 });
 
-// ---------------------------
-// Start Server
-// ---------------------------
+// Server port for Render
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`🔥 Server running on port ${PORT}`);
