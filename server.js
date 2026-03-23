@@ -11,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // ✅ MongoDB connection from environment variable
+// Make sure to set MONGO_URI on Render dashboard under Environment Variables
 const mongoURI = process.env.MONGO_URI;
 
 if (!mongoURI) {
@@ -62,7 +63,7 @@ app.post("/contact", async (req, res) => {
   }
 });
 
-// Server port for Render
+// ✅ Server port for Render
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`🔥 Server running on port ${PORT}`);
