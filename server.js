@@ -8,17 +8,26 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🔥 PUT YOUR MONGODB CONNECTION STRING HERE
+// ✅ MongoDB Connection (FIXED)
 mongoose.connect("mongodb+srv://testuser:rashu@cluster0.4akmclo.mongodb.net/portfolioDB?retryWrites=true&w=majority")
 .then(() => console.log("✅ MongoDB Connected"))
 .catch(err => console.log("❌ DB Error:", err.message));
 
 // Schema
 const MessageSchema = new mongoose.Schema({
-    name: String,
-    email: String,
-    message: String
-});
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    message: {
+        type: String,
+        required: true
+    }
+}, { timestamps: true });
 
 const Message = mongoose.model("Message", MessageSchema);
 
@@ -34,15 +43,14 @@ app.post('/contact', async (req, res) => {
     try {
         const { name, email, message } = req.body;
 
-        const newMessage = new Message({
-            name,
-            email,
-            message
-        });
+        if (!name || !email || !message) {
+            return res.status(400).json({ msg: "All fields are required" });
+        }
 
+        const newMessage = new Message({ name, email, message });
         await newMessage.save();
 
-        res.json({ msg: "Message saved successfully ✅" });
+        res.json({ msg: "✅ Message saved successfully" });
 
     } catch (err) {
         console.error(err);
@@ -50,7 +58,9 @@ app.post('/contact', async (req, res) => {
     }
 });
 
-// Start server
-app.listen(10000, () => {
-    console.log("🔥 Server running on http://localhost:10000");
+// ✅ IMPORTANT for Render deployment
+const PORT = process.env.PORT || 10000;
+
+app.listen(PORT, () => {
+    console.log(`🔥 Server running on port ${PORT}`);
 });
