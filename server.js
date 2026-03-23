@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 // 🔥 PUT YOUR MONGODB CONNECTION STRING HERE
-mongoose.connect("mongodb+srv://testuser:test123@cluster0.4akmclo.mongodb.net/portfolioDB?retryWrites=true&w=majority")
+mongoose.connect("mongodb+srv://testuser:rashu@cluster0.4akmclo.mongodb.net/portfolioDB?retryWrites=true&w=majority")
 .then(() => console.log("✅ MongoDB Connected"))
 .catch(err => console.log("❌ DB Error:", err.message));
 
