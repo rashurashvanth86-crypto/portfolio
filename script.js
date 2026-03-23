@@ -12,7 +12,6 @@ let currentText = "";
 let letter = "";
 
 function type(){
-
 if(count === text.length){
 count = 0;
 }
@@ -33,12 +32,33 @@ setTimeout(type,120);
 type();
 
 
-// contact form
+// ✅ CONTACT FORM CONNECTED TO BACKEND
 
-document.getElementById("contactForm").addEventListener("submit",function(e){
+document.getElementById("contactForm").addEventListener("submit", async function(e){
 
 e.preventDefault();
 
-alert("Message sent successfully!");
+const name = document.querySelector('input[type="text"]').value;
+const email = document.querySelector('input[type="email"]').value;
+const message = document.querySelector('textarea').value;
+
+try {
+
+const response = await fetch("https://portfolio-fks1.onrender.com/contact", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({ name, email, message })
+});
+
+const data = await response.json();
+
+alert(data.msg);
+
+} catch (error) {
+console.error(error);
+alert("❌ Failed to send message");
+}
 
 });
