@@ -14,9 +14,7 @@ app.use(express.json());
 // ---------------------------
 // Replace with your actual MongoDB username, password, and DB name
 // ⚠️ Encode special characters in password, e.g., @ → %40
-mongoose.connect(
-  "mongodb+srv://rashurashvanth86_db_user:Rashvanth123%40@cluster0.4akmclo.mongodb.net/portfolioDB?retryWrites=true&w=majority"
-)
+mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("✅ MongoDB Connected"))
 .catch(err => console.log("❌ DB Error:", err.message));
 
